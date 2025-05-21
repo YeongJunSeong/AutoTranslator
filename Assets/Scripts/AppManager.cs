@@ -31,6 +31,7 @@ public class AppManager : MonoBehaviour
     [SerializeField] InputField inputMessage;
 
     [Header("-------현재 사용하고 있는 Tool------")][Space(10f)]
+    [SerializeField] Text txtTranslating;
     [SerializeField] Text txtUsingToolName;
 
     [Header("-------번역 상태 관련한 UI 변수------")][Space(10f)]
@@ -93,7 +94,10 @@ public class AppManager : MonoBehaviour
 
     IEnumerator Co_AllItemTranslate()
     {
-        Debug.Log("번역 작업 시작...");
+        int currentCSVFileIdx = localizationManager.currentCSVFileIndex;
+        string csvFileName = localizationManager.ListCSVFileName[currentCSVFileIdx];
+        Debug.Log($"{csvFileName} 번역 작업 시작...");
+        txtTranslating.text = $"{csvFileName} 번역 작업 시작...";
 
         var itemsToTranslate = new List<KeyValuePair<int, string>>();
         var koreanTextDatas = localizationManager.KoreanTextDatas;
@@ -118,6 +122,7 @@ public class AppManager : MonoBehaviour
         {
             _isTranslating = false;
             Debug.Log("모든 항목이 이미 번역되어 있습니다.");
+            txtTranslating.text = $"모든 항목이 이미 번역되어 있습니다.";
             UpdateTranslationUI(totalItems, totalItems);
             yield break;
         }
@@ -156,6 +161,8 @@ public class AppManager : MonoBehaviour
         }
 
         Debug.Log("모든 항목 번역 완료!");
+        txtTranslating.text = $"{localizationManager.ListCSVFileName[currentCSVFileIdx]} 모든 항목 번역 완료!";
+
         yield return null;
         localizationManager.SaveTranslatedCSV();
         _isTranslating = false;
@@ -211,6 +218,7 @@ public class AppManager : MonoBehaviour
                     localizationManager.SetTranslationComplatedText(key, translatedText);       // 번역 결과 저장
 
                     Debug.Log($"항목 번역 완료 <color=cyan>(Key: {key})</color>: {koreanText} -> {translatedText}");
+                    txtTranslating.text = $"항목 번역 완료 <color=cyan>(Key: {key})</color>: {koreanText} -> {translatedText}";
                 }
 
                 // 진행 상태 업데이트
@@ -220,6 +228,7 @@ public class AppManager : MonoBehaviour
             else
             {
                 Debug.LogError("배치 번역 결과 오류: 결과 수가 요청 수와 일치하지 않습니다.");
+                txtTranslating.text = "배치 번역 결과 오류: 결과 수가 요청 수와 일치하지 않습니다.";
             }
 
             // 인덱스 이동
