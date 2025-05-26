@@ -188,14 +188,9 @@ public class DeepLTranslatorController : MonoBehaviour
             ? "https://api-free.deepl.com/v2/usage"
             : "https://api.deepl.com/v2/usage";
 
-        // GET 요청 생성
-        UnityWebRequest request = UnityWebRequest.Get(usageUrl);
-
-        // 헤더 설정: API 키 인증
-        request.SetRequestHeader("Authorization", $"DeepL-Auth-Key {Define.DEEPL_API_KEY}");
-
-        // 요청 전송 및 완료 대기
-        yield return request.SendWebRequest();
+        UnityWebRequest request = UnityWebRequest.Get(usageUrl);  // GET 요청 생성
+        request.SetRequestHeader("Authorization", $"DeepL-Auth-Key {Define.DEEPL_API_KEY}");  // 헤더 설정: API 키 인증
+        yield return request.SendWebRequest();  // 요청 전송 및 완료 대기
 
         // 요청 결과 처리
         if (request.result != UnityWebRequest.Result.Success)

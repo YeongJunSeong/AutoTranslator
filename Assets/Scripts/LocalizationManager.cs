@@ -192,25 +192,6 @@ public class LocalizationManager : MonoBehaviour
         {
             string outputFilePath;
 
-            //if (createNewFile)
-            //{
-            //    // 새 파일 생성
-            //    string fileName = Path.GetFileNameWithoutExtension(ListCSVFileName[currentCSVFileIndex]);
-            //    string extension = Path.GetExtension(ListCSVFileName[currentCSVFileIndex]);
-            //    string newFileName = fileName + translatedFileSuffix + extension;
-            //    outputFilePath = Path.Combine(LocalPathName, newFileName);
-            //}
-            //else
-            //{
-            //    // 기존 파일 덮어쓰기
-            //    outputFilePath = Path.Combine(LocalPathName, ListCSVFileName[currentCSVFileIndex]);
-
-            //    // 원본 파일 백업 (덮어쓰기 전에)
-            //    string backupPath = outputFilePath + ".bak";
-            //    File.Copy(outputFilePath, backupPath, true);
-            //    Debug.Log($"원본 파일 백업: {backupPath}");
-            //}
-
             // 기존 파일 덮어쓰기
             outputFilePath = Path.Combine(LocalPathName, ListCSVFileName[currentCSVFileIndex]);
 
