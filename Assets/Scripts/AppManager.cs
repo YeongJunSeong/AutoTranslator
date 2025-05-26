@@ -29,6 +29,8 @@ public class AppManager : MonoBehaviour
     [Header("----------------")][Space(10f)]
     [SerializeField] Text txtResult;
     [SerializeField] InputField inputMessage;
+    [SerializeField] Button[] arrloadButtons;       // csv 로드 버튼
+    [SerializeField] Button btnTranslator;           // 번역하기 버튼
 
     [Header("-------현재 사용하고 있는 Tool------")][Space(10f)]
     [SerializeField] Text txtTranslating;
@@ -69,7 +71,8 @@ public class AppManager : MonoBehaviour
     void Start()
     {
         //localizationManager.Init();
-        
+        TranslatorButtonInteratable(false);
+
         switch (eCurrentTool)
         {
             case TranslatorTools.DeepL:   txtUsingToolName.text = $"[  DeepL 번역기  ] 사용 중.."; break;
@@ -98,6 +101,7 @@ public class AppManager : MonoBehaviour
         string csvFileName = localizationManager.ListCSVFileName[currentCSVFileIdx];
         Debug.Log($"{csvFileName} 번역 작업 시작...");
         txtTranslating.text = $"{csvFileName} 번역 작업 시작...";
+        TranslatorButtonInteratable(false);
 
         var itemsToTranslate = new List<KeyValuePair<int, string>>();
         var koreanTextDatas = localizationManager.KoreanTextDatas;
@@ -166,6 +170,7 @@ public class AppManager : MonoBehaviour
         yield return null;
         localizationManager.SaveTranslatedCSV();
         _isTranslating = false;
+        AllLoadButtonInteratable(true);        
     }
 
     public IEnumerator Co_DeepLBatchTranslate(List<KeyValuePair<int, string>> itemsToTranslate, int batchSize)
@@ -241,6 +246,19 @@ public class AppManager : MonoBehaviour
         yield return null;
 
         UpdateTranslationUI(0, 0);
+    }
+
+    public void AllLoadButtonInteratable(bool bInteractable)
+    {
+        for (int i = 0; i < arrloadButtons.Length; i++)
+        {
+            arrloadButtons[i].interactable = bInteractable;
+        }
+    }
+
+    public void TranslatorButtonInteratable(bool bInteratable)
+    {
+        btnTranslator.interactable = bInteratable;
     }
 
     #region AI 이용하는 방식

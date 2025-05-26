@@ -46,9 +46,11 @@ public class LocalizationManager : MonoBehaviour
 
     public void OnClickLoadFile(int index)
     {
+        AppManager.Instance.AllLoadButtonInteratable(false);
         currentCSVFileIndex = index;
 
         LoadCSVFile(index);
+        AppManager.Instance.TranslatorButtonInteratable(true);
     }
 
     void LoadCSVFile(int fileIndex)
@@ -58,14 +60,49 @@ public class LocalizationManager : MonoBehaviour
         {
             Debug.Log($"CSV 파일 경로 : {FileFullPath}");
 
-            // 파일 전체를 한 번에 읽어서 처리 (줄바꿈 문제 해결)
-            string fileContent = File.ReadAllText(FileFullPath, Encoding.UTF8);
-            LoadCSVData(fileContent);
+            try
+            {
+                // 파일 전체를 한 번에 읽어서 처리 (줄바꿈 문제 해결)
+                string fileContent = File.ReadAllText(FileFullPath, Encoding.UTF8);
+                LoadCSVData(fileContent);
+            }
+            catch (IOException ioEx)
+            {
+                Debug.LogError($"CSV 파일을 읽는 중 오류 발생: {ioEx.Message}");
+                if (IsFileLocked(FileFullPath))
+                {
+                    Debug.LogError("해당 CSV 파일이 다른 프로그램에서 열려 있습니다. 파일을 닫은 후 다시 시도해주세요.");
+                }
+
+                AppManager.Instance.AllLoadButtonInteratable(true);
+                AppManager.Instance.TranslatorButtonInteratable(false);
+            }  
         }
         else
         {
             Debug.LogError($"{FileFullPath}경로에서 {ListCSVFileName[fileIndex]}이름의 CSV 파일을 찾을 수 없습니다.");
+            AppManager.Instance.AllLoadButtonInteratable(true);
+            AppManager.Instance.TranslatorButtonInteratable(false);
         }
+    }
+
+    bool IsFileLocked(string path)
+    {
+        FileStream stream = null;
+        try
+        {
+            stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.None);
+        }
+        catch (IOException)
+        {
+            return true;
+        }
+        finally
+        {
+            stream?.Close();
+        }
+
+        return false;
     }
 
     #region Load CSV Data
@@ -79,6 +116,8 @@ public class LocalizationManager : MonoBehaviour
             if (parsedRows.Count <= 1)
             {
                 Debug.LogError("CSV 파일이 비어 있거나 헤더만 있습니다.");
+                AppManager.Instance.AllLoadButtonInteratable(true);
+                AppManager.Instance.TranslatorButtonInteratable(false);
                 return;
             }
 
@@ -118,18 +157,24 @@ public class LocalizationManager : MonoBehaviour
             if (keyIndex == -1)
             {
                 Debug.LogError("Key 칼럼을 찾을 수 없습니다.");
+                AppManager.Instance.AllLoadButtonInteratable(true);
+                AppManager.Instance.TranslatorButtonInteratable(false);
                 return;
             }
 
             if (koreanIndex == -1)
             {
                 Debug.LogError("Korean(ko) 칼럼을 찾을 수 없습니다.");
+                AppManager.Instance.AllLoadButtonInteratable(true);
+                AppManager.Instance.TranslatorButtonInteratable(false);
                 return;
             }
 
             if (englishIndex == -1)
             {
                 Debug.LogError("English(en) 칼럼을 찾을 수 없습니다.");
+                AppManager.Instance.AllLoadButtonInteratable(true);
+                AppManager.Instance.TranslatorButtonInteratable(false);
                 return;
             }
 
@@ -170,11 +215,13 @@ public class LocalizationManager : MonoBehaviour
                 }
             }
 
-            Debug.Log($"총 <color=cyan>{koreanTextData.Count}개</color>의 한국어 항목을 로드했습니다.");
+            Debug.Log($"총 <color=cyan>{koreanTextData.Count}개</color>의 한국어 항목을 로드했습니다.");            
         }
         catch (Exception e)
         {
             Debug.LogError($"CSV 파일 데이터 로드 중 오류 발생: {e.Message}\n{e.StackTrace}");
+            AppManager.Instance.AllLoadButtonInteratable(true);
+            AppManager.Instance.TranslatorButtonInteratable(false);
         }
     }
     #endregion
@@ -185,6 +232,8 @@ public class LocalizationManager : MonoBehaviour
         if (ListOriginParsedRows == null || ListOriginParsedRows.Count <= 1)
         {
             Debug.LogError("원본 CSV 구조가 없습니다. 먼저 CSV 파일을 로드하세요.");
+            AppManager.Instance.AllLoadButtonInteratable(true);
+            AppManager.Instance.TranslatorButtonInteratable(false);
             return;
         }
 
@@ -245,10 +294,14 @@ public class LocalizationManager : MonoBehaviour
             File.WriteAllText(outputFilePath, csv.ToString(), Encoding.UTF8);
 
             Debug.Log($"번역된 CSV 파일이 저장되었습니다: {outputFilePath}");
+            AppManager.Instance.AllLoadButtonInteratable(true);
+            AppManager.Instance.TranslatorButtonInteratable(false);
         }
         catch (Exception e)
         {
             Debug.LogError($"번역된 CSV 파일 저장 중 오류 발생: {e.Message}");
+            AppManager.Instance.AllLoadButtonInteratable(true);
+            AppManager.Instance.TranslatorButtonInteratable(false);
         }
     }
 
