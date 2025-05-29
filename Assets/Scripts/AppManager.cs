@@ -9,8 +9,6 @@ using System.IO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using System.ComponentModel;
 
 public class AppManager : MonoBehaviour
 {
@@ -29,7 +27,13 @@ public class AppManager : MonoBehaviour
     [Header("----------------")][Space(10f)]
     [SerializeField] Text txtResult;
     [SerializeField] InputField inputMessage;
-    [SerializeField] Button[] arrloadButtons;       // csv 로드 버튼
+    [SerializeField] Transform trCSVLoadButtonParents;
+
+    [Header("-------로드 버튼 목록들------")][Space(10f)]
+    [SerializeField, ReadOnly] public List<Button> listLoadButton;
+    //[SerializeField] Button[] arrloadButtons;       // csv 로드 버튼
+
+    [Header("-------번역하기 버튼------")][Space(10f)]
     [SerializeField] Button btnTranslator;           // 번역하기 버튼
 
     [Header("-------현재 사용하고 있는 Tool------")][Space(10f)]
@@ -71,6 +75,12 @@ public class AppManager : MonoBehaviour
     void Start()
     {
         //localizationManager.Init();
+        int loadButtonCount = trCSVLoadButtonParents.childCount;
+        for (int i = 0; i < loadButtonCount; i++)
+        {
+            listLoadButton.Add(trCSVLoadButtonParents.GetChild(i).GetComponent<Button>());
+        }
+
         TranslatorButtonInteratable(false);
 
         switch (eCurrentTool)
@@ -250,9 +260,9 @@ public class AppManager : MonoBehaviour
 
     public void AllLoadButtonInteratable(bool bInteractable)
     {
-        for (int i = 0; i < arrloadButtons.Length; i++)
+        for (int i = 0; i < listLoadButton.Count; i++)
         {
-            arrloadButtons[i].interactable = bInteractable;
+            listLoadButton[i].interactable = bInteractable;
         }
     }
 
